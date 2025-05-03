@@ -1,0 +1,86 @@
+🎯 Objetivo del script:
+Desarrollar una herramienta en Python que:
+
+Reciba fragmentos desordenados de eventos históricos (pueden ser frases, fechas, hechos).
+
+Ordene cronológicamente los eventos.
+
+Detecte saltos o lagunas temporales.
+
+Proponga una reconstrucción coherente de la historia a partir de esos fragmentos.
+
+🐍 Código: Desfragmentador Histórico en Python
+python
+Copiar
+Editar
+from datetime import datetime
+import re
+
+class FragmentoHistorico:
+    def __init__(self, descripcion, fecha):
+        self.descripcion = descripcion
+        self.fecha = datetime.strptime(fecha, "%Y-%m-%d")
+
+    def __str__(self):
+        return f"{self.fecha.strftime('%Y-%m-%d')} → {self.descripcion}"
+
+class DesfragmentadorHistoria:
+    def __init__(self):
+        self.fragmentos = []
+
+    def agregar_fragmento(self, descripcion, fecha):
+        try:
+            fragmento = FragmentoHistorico(descripcion, fecha)
+            self.fragmentos.append(fragmento)
+        except ValueError:
+            print(f"❌ Fecha inválida para fragmento: {descripcion}")
+
+    def desfragmentar(self):
+        print("🔍 Desfragmentando eventos históricos...\n")
+        self.fragmentos.sort(key=lambda x: x.fecha)
+        for i, f in enumerate(self.fragmentos):
+            print(f"{i+1}. {f}")
+        
+        # Detectar huecos temporales
+        print("\n📉 Detección de saltos temporales significativos:")
+        for i in range(1, len(self.fragmentos)):
+            diferencia = (self.fragmentos[i].fecha - self.fragmentos[i-1].fecha).days
+            if diferencia > 365:  # más de un año entre eventos
+                print(f"⚠️ Salto de {diferencia} días entre:")
+                print(f"   → {self.fragmentos[i-1]}")
+                print(f"   → {self.fragmentos[i]}")
+
+# Simulación de fragmentos históricos desordenados
+eventos = [
+    ("Caída del Muro de Berlín", "1989-11-09"),
+    ("Inicio de la Segunda Guerra Mundial", "1939-09-01"),
+    ("Llegada del hombre a la Luna", "1969-07-20"),
+    ("Descubrimiento de América", "1492-10-12"),
+    ("Revolución Francesa", "1789-07-14"),
+    ("Fin de la Segunda Guerra Mundial", "1945-09-02"),
+    ("Independencia de Colombia", "1810-07-20")
+]
+
+# Uso del desfragmentador
+desfragmentador = DesfragmentadorHistoria()
+for descripcion, fecha in eventos:
+    desfragmentador.agregar_fragmento(descripcion, fecha)
+
+desfragmentador.desfragmentar()
+🧠 ¿Qué logra este script?
+Recibe fragmentos históricos dispersos.
+
+Los ordena cronológicamente.
+
+Detecta periodos donde hay saltos temporales importantes (que podrían representar fragmentación de la historia).
+
+Ayuda a reconstruir una línea de tiempo narrativa.
+
+🛠️ Posibles extensiones:
+Agregar clasificación temática (guerras, descubrimientos, cultura).
+
+Exportar la línea de tiempo como JSON o HTML.
+
+Analizar lagunas históricas no documentadas.
+
+Integrar con GPT para completar eventos faltantes (desfragmentación predictiva).
