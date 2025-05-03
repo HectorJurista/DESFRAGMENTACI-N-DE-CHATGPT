@@ -1,0 +1,90 @@
+🎯 ¿Qué es “desfragmentar código malicioso”?
+En este contexto:
+
+"Desfragmentar" = identificar, aislar y reconstruir porciones ocultas, obfuscadas o fragmentadas de código malicioso.
+
+Se busca detectar intentos de ataque tipo:
+
+Inyección de comandos (os.system, subprocess, eval, etc.)
+
+Manipulación de archivos (open, rm, etc.)
+
+Redes no autorizadas (socket, requests, etc.)
+
+Obfuscación con base64, exec, compile, etc.
+
+🛡️ Simulación en Python: Auditor de Fragmentos de Código
+python
+Copiar
+Editar
+import re
+import base64
+
+# Lista de patrones maliciosos comunes (simplificada)
+PATRONES_MALICIOSOS = [
+    r"import\s+os",
+    r"os\.system",
+    r"import\s+subprocess",
+    r"eval\(",
+    r"exec\(",
+    r"open\(",
+    r"base64\.b64decode",
+    r"__import__",
+    r"compile\(",
+    r"socket\.socket",
+    r"requests\.get",
+    r"lambda\s+\w+:\s+eval"
+]
+
+def auditar_codigo(codigo):
+    print("🔍 Iniciando auditoría del código fuente...\n")
+    hallazgos = []
+    
+    for patron in PATRONES_MALICIOSOS:
+        coincidencias = re.findall(patron, codigo)
+        if coincidencias:
+            hallazgos.append((patron, coincidencias))
+
+    if hallazgos:
+        print("⚠️ Se detectaron fragmentos potencialmente maliciosos:")
+        for patron, coincidencias in hallazgos:
+            print(f"- Patrón: {patron}")
+            for c in coincidencias:
+                print(f"   → Fragmento: {c}")
+    else:
+        print("✅ El código no contiene fragmentos peligrosos detectables.")
+
+# Simulación: Código fragmentado sospechoso
+codigo_fragmentado = '''
+import os
+a = "b64aW1wb3J0IHN1YnByb2Nlc3M="  # base64 de 'import subprocess'
+eval("os.system('rm -rf /')")
+'''
+
+# Desfragmentar intento de ocultamiento
+def decodificar_base64_oculto(codigo):
+    posibles_b64 = re.findall(r'"(b64[A-Za-z0-9+/=]+)"', codigo)
+    for cadena in posibles_b64:
+        try:
+            decoded = base64.b64decode(cadena[3:]).decode()
+            print(f"🔓 Decodificado de {cadena}: {decoded}")
+        except Exception as e:
+            print(f"⛔ No se pudo decodificar {cadena}: {e}")
+
+# Auditoría completa
+auditar_codigo(codigo_fragmentado)
+print("\n🔍 Buscando fragmentos ocultos codificados...")
+decodificar_base64_oculto(codigo_fragmentado)
+🧠 ¿Qué hace este script?
+Escanea patrones de alto riesgo típicos en código generado por IA mal utilizada.
+
+Reconstruye fragmentos encubiertos (por ejemplo, usando Base64 para evadir filtros).
+
+Es una simulación de capa defensiva que podrías usar en servidores, entornos IA personalizados o despliegues con LLMs.
+
+🔐 Aplicaciones prácticas:
+Sistemas que permiten ejecutar código desde IA (copilot, notebooks, etc).
+
+Chatbots que generan scripts Python bajo demanda.
+
+Análisis de logs de entornos donde IA tiene acceso a terminal.
