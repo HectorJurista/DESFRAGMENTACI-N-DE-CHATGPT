@@ -1,0 +1,71 @@
+import random
+import time
+
+class Transaccion:
+    def __init__(self, id, monto_gas, tipo="fragmentada"):
+        self.id = id
+        self.monto_gas = monto_gas
+        self.tipo = tipo
+
+    def __repr__(self):
+        return f"{self.id}:{self.monto_gas} Gwei [{self.tipo}]"
+
+# Simulamos una blockchain con transacciones fragmentadas
+def generar_transacciones_fragmentadas(n=15):
+    return [Transaccion(f"TX{i}", random.randint(1, 20)) for i in range(n)]
+
+# Mostrar transacciones actuales
+def mostrar_transacciones(transacciones):
+    for tx in transacciones:
+        print(tx)
+
+# Consolidar transacciones: agruparlas si tienen gas bajo
+def desfragmentar_gasto(transacciones, umbral=10):
+    agrupadas = []
+    buffer = []
+    acumulado = 0
+    for tx in transacciones:
+        if tx.monto_gas < umbral:
+            buffer.append(tx)
+            acumulado += tx.monto_gas
+        else:
+            agrupadas.append(tx)
+
+        if acumulado >= umbral:
+            nueva_tx = Transaccion(f"AGRU{len(agrupadas)}", acumulado, tipo="agrupada")
+            agrupadas.append(nueva_tx)
+            buffer.clear()
+            acumulado = 0
+
+    # Agregar lo que quedó en buffer
+    if buffer:
+        nueva_tx = Transaccion(f"AGRU{len(agrupadas)}", acumulado, tipo="agrupada")
+        agrupadas.append(nueva_tx)
+
+    return agrupadas
+
+# Proceso de simulación
+print("Transacciones fragmentadas (antes):")
+transacciones = generar_transacciones_fragmentadas()
+mostrar_transacciones(transacciones)
+
+print("\nDesfragmentando gasto en blockchain...\n")
+time.sleep(2)
+
+transacciones_ordenadas = desfragmentar_gasto(transacciones)
+
+print("Transacciones después de desfragmentar:")
+mostrar_transacciones(transacciones_ordenadas)
+🧠 ¿Qué representa esto?
+Transacciones pequeñas y mal optimizadas → “fragmentación del gasto”.
+
+El proceso de "desfragmentación" agrupa esas microtransacciones hasta un umbral lógico (por ejemplo, 10 Gwei).
+
+El resultado son menos transacciones, pero más eficientes.
+
+🔒 Aplicaciones reales
+Bitcoin (UTXO consolidation): Agrupar salidas no gastadas para reducir fees futuros.
+
+Ethereum (gas optimization): Unir múltiples llamadas a contratos en una sola si es posible.
+
+Rollups y L2: Reducen fragmentación al consolidar actividad on-chain.
