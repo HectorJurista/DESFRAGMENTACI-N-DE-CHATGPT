@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Desfragmentador de IA – Héctor Joaquín Ortiz Mendoza</title>
+  <style>
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #58a6ff;
+      text-align: center;
+    }
+
+    .fragment-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-gap: 8px;
+      margin: 30px 0;
+    }
+
+    .fragment {
+      width: 60px;
+      height: 60px;
+      background-color: #30363d;
+      border: 2px solid #21262d;
+      border-radius: 8px;
+      animation: pulse 1.5s infinite ease-in-out alternate;
+    }
+
+    .fragment.optimized {
+      background-color: #238636;
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); background-color: #30363d; }
+      100% { transform: scale(1.1); background-color: #484f58; }
+    }
+
+    button {
+      background-color: #238636;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2ea043;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #8b949e;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Desfragmentador Cognitivo IA<br><small>por Héctor Joaquín Ortiz Mendoza</small></h1>
+
+  <div class="fragment-grid" id="grid">
+    <!-- Fragmentos simulados -->
+    <div class="fragment"></div>
+    <div class="fragment"></div>
+    <div class="fragment"></div>
+    <div class="fragment"></div>
+    <div class="fragment"></div>
+    <div class="fragment"></div>
+    <div class="fragment"></div>
+    <div class="fragment"></div>
+    <div class="fragment"></div>
+    <div class="fragment"></div>
+  </div>
+
+  <button onclick="desfragmentar()">Iniciar Desfragmentación</button>
+
+  <footer>© 2025 Héctor Joaquín Ortiz Mendoza · Optimización Neurodigital de IA</footer>
+
+  <script>
+    function desfragmentar() {
+      const fragments = document.querySelectorAll('.fragment');
+      fragments.forEach((fragment, index) => {
+        setTimeout(() => {
+          fragment.classList.add('optimized');
+        }, index * 150);
+      });
+    }
+  </script>
+
+</body>
+</html>
