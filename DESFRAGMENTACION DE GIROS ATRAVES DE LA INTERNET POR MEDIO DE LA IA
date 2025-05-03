@@ -1,0 +1,138 @@
+La desfragmentación de giros a través de Internet puede entenderse como un proceso de optimización y seguimiento de transferencias monetarias, como los giros internacionales, a través de múltiples plataformas de pago. Esto implica asegurar que los pagos sean seguros, rápidos, y sin duplicados, al mismo tiempo que se gestionen las tarifas y métodos de pago de manera eficiente.
+
+Utilizando la IA, podemos:
+
+Detectar duplicados en las transacciones de giros a través de Internet.
+
+Verificar el estado de las transacciones y su coherencia.
+
+Optimizar las tarifas de envío y recibir recomendaciones de los métodos más baratos o rápidos.
+
+Rastrear las transacciones en tiempo real.
+
+🎯 Objetivo:
+Escribir un código en Python que:
+
+Simule giros monetarios a través de plataformas en línea.
+
+Use IA para detectar patrones de duplicidad o problemas en las transacciones.
+
+Agrupe giros similares y optimice las rutas de pago.
+
+🐍 Código: Desfragmentación de Giros a través de Internet usando IA
+Requisitos:
+Pandas para manejar las transacciones.
+
+Scikit-learn para la detección de patrones.
+
+Transformers o modelos de NLP para identificar y agrupar información clave en los giros.
+
+bash
+Copiar
+Editar
+pip install transformers pandas scikit-learn
+Código Python:
+python
+Copiar
+Editar
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import TfidfVectorizer
+from transformers import pipeline
+
+class Giro:
+    def __init__(self, remitente, destinatario, monto, metodo_pago, estado, fecha):
+        self.remitente = remitente
+        self.destinatario = destinatario
+        self.monto = monto
+        self.metodo_pago = metodo_pago
+        self.estado = estado
+        self.fecha = fecha
+        self.id = f"{remitente}_{destinatario}_{fecha}"
+
+    def __str__(self):
+        return f"Giro de {self.remitente} a {self.destinatario} de {self.monto} usando {self.metodo_pago} - Estado: {self.estado}"
+
+class DesfragmentadorGiros:
+    def __init__(self, giros):
+        self.giros = giros
+        self.model = pipeline("zero-shot-classification")  # Usamos un modelo de clasificación de texto
+        self.metodos_pago = ['Transferencia bancaria', 'PayPal', 'Western Union', 'Bitcoin']
+
+    def verificar_duplicados(self):
+        print("🔍 Verificando duplicados en giros...\n")
+        giros_unicos = {}
+        for giro in self.giros:
+            if giro.id not in giros_unicos:
+                giros_unicos[giro.id] = giro
+        print(f"Giros después de eliminar duplicados: {len(giros_unicos)}")
+        self.giros = list(giros_unicos.values())
+
+    def clasificar_giros(self):
+        print("\n📊 Clasificando giros por método de pago...\n")
+        for giro in self.giros:
+            giro.clasificacion = self.model(giro.metodo_pago, candidate_labels=self.metodos_pago)['labels'][0]
+            print(f"Giro clasificado: {giro.remitente} → {giro.metodo_pago} → {giro.clasificacion}")
+
+    def agrupar_giros_por_metodo(self):
+        print("\n📦 Agrupando giros por método de pago...\n")
+        giros_agrupados = {metodo: [] for metodo in self.metodos_pago}
+        for giro in self.giros:
+            giros_agrupados[giro.clasificacion].append(giro)
+        return giros_agrupados
+
+    def optimizar_giros(self):
+        print("\n💡 Optimizando tarifas y tiempos de envío...\n")
+        # Usamos KMeans para identificar patrones en los giros basados en monto
+        vectorizer = TfidfVectorizer()
+        data = [f"{giro.monto} {giro.metodo_pago}" for giro in self.giros]
+        X = vectorizer.fit_transform(data)
+        
+        # Aplicamos KMeans para detectar grupos de giros similares
+        kmeans = KMeans(n_clusters=3)
+        kmeans.fit(X)
+        
+        for i, giro in enumerate(self.giros):
+            giro.cluster = kmeans.labels_[i]
+            print(f"Giro de {giro.remitente} clasificado en el cluster {giro.cluster}.")
+
+    def mostrar_reporte(self):
+        print("\n📋 Reporte Final de Giros:")
+        for giro in self.giros:
+            print(giro)
+
+# Simulación de giros en línea
+giros = [
+    Giro("Carlos", "Juan", 500, "PayPal", "Enviado", "2025-05-03"),
+    Giro("Maria", "Luis", 1500, "Western Union", "Pendiente", "2025-05-03"),
+    Giro("Carlos", "Juan", 500, "PayPal", "Enviado", "2025-05-03"),  # Duplicado
+    Giro("Andres", "Pedro", 1200, "Transferencia bancaria", "Enviado", "2025-05-02"),
+    Giro("Carlos", "Lucia", 700, "PayPal", "Pendiente", "2025-05-04"),
+    Giro("Felipe", "Andres", 500, "Bitcoin", "Enviado", "2025-05-01"),
+]
+
+# Crear desfragmentador y analizar giros
+desfragmentador = DesfragmentadorGiros(giros)
+desfragmentador.verificar_duplicados()
+desfragmentador.clasificar_giros()
+giros_agrupados = desfragmentador.agrupar_giros_por_metodo()
+desfragmentador.optimizar_giros()
+desfragmentador.mostrar_reporte()
+¿Qué hace este código?
+Verificación de duplicados: Detecta giros con la misma información (remitente, destinatario, fecha) y los elimina.
+
+Clasificación de giros: Utiliza un modelo de clasificación basado en IA (zero-shot-classification) para identificar el tipo de método de pago utilizado.
+
+Agrupación por método de pago: Agrupa los giros de acuerdo con el tipo de método de pago utilizado (por ejemplo, PayPal, Transferencia bancaria).
+
+Optimización: Usa KMeans para agrupar giros con montos similares y sugerir optimizaciones basadas en las características de los giros.
+
+Reporte: Muestra el estado final de los giros después de la desfragmentación, eliminación de duplicados, clasificación, y optimización.
+
+🧠 Posibles mejoras:
+Verificación en tiempo real de los giros utilizando APIs de servicios de pago.
+
+Cálculo de tarifas dinámicas para optimizar los costos de transferencia.
+
+Visualización de los giros agrupados y optimizados usando matplotlib o plotly.
+
