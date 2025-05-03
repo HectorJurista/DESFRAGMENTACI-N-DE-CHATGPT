@@ -1,0 +1,52 @@
+import random
+import time
+
+# Simulación de sectores del disco (100 sectores)
+SECTORES_DISCO = 100
+
+# Simulamos archivos distribuidos de forma fragmentada
+def generar_discos_fragmentados():
+    disco = ['.' for _ in range(SECTORES_DISCO)]
+    archivos = {
+        'A': random.sample(range(0, 20), 5),
+        'B': random.sample(range(20, 40), 5),
+        'C': random.sample(range(40, 60), 5),
+        'D': random.sample(range(60, 80), 5),
+        'E': random.sample(range(80, 100), 5)
+    }
+    for nombre, sectores in archivos.items():
+        for sector in sectores:
+            disco[sector] = nombre
+    return disco, archivos
+
+# Función para mostrar el estado del disco
+def mostrar_disco(disco):
+    print('Estado del Disco:')
+    print(''.join(disco))
+
+# Proceso de desfragmentación (reorganizar archivos en orden continuo)
+def desfragmentar_disco(disco, archivos):
+    print("\nIniciando desfragmentación...\n")
+    nuevo_disco = ['.' for _ in range(SECTORES_DISCO)]
+    cursor = 0
+
+    for archivo in sorted(archivos.keys()):
+        for _ in archivos[archivo]:
+            time.sleep(0.1)  # Simula el tiempo de movimiento
+            nuevo_disco[cursor] = archivo
+            cursor += 1
+            mostrar_disco(nuevo_disco)
+            print()
+    
+    return nuevo_disco
+
+# Simulación
+disco_fragmentado, archivos = generar_discos_fragmentados()
+print("ANTES DE DESFRAGMENTAR:\n")
+mostrar_disco(disco_fragmentado)
+
+# Ejecutar desfragmentación
+disco_ordenado = desfragmentar_disco(disco_fragmentado, archivos)
+
+print("\nDESPUÉS DE DESFRAGMENTAR:\n")
+mostrar_disco(disco_ordenado)
