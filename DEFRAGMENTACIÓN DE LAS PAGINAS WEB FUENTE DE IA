@@ -1,0 +1,92 @@
+🎯 ¿Qué significa esto?
+Cuando una IA se entrena o nutre de muchas páginas web:
+
+Las fuentes pueden estar dispersas, duplicadas o incompletas.
+
+Algunas URL pueden estar rotas, tener contenido desactualizado o redundante.
+
+El proceso de “desfragmentación” consiste en:
+
+Reunir las fuentes.
+
+Eliminar duplicados.
+
+Verificar la disponibilidad de las páginas.
+
+Clasificarlas o limpiarlas para entrenamiento.
+
+🐍 Código: Desfragmentador de fuentes web para IA
+python
+Copiar
+Editar
+import requests
+from urllib.parse import urlparse
+from collections import defaultdict
+
+class FuenteWeb:
+    def __init__(self, url):
+        self.url = url
+        self.estado = None
+        self.dominio = urlparse(url).netloc
+
+    def verificar_estado(self):
+        try:
+            response = requests.head(self.url, timeout=5)
+            self.estado = response.status_code
+        except Exception as e:
+            self.estado = f"Error: {e}"
+
+    def __str__(self):
+        return f"{self.url} → {self.estado}"
+
+class DesfragmentadorWeb:
+    def __init__(self, urls):
+        self.fuentes = [FuenteWeb(url) for url in set(urls)]  # elimina duplicados
+
+    def analizar_fuentes(self):
+        print("🔍 Analizando fuentes web...\n")
+        dominio_map = defaultdict(list)
+        for fuente in self.fuentes:
+            fuente.verificar_estado()
+            dominio_map[fuente.dominio].append(fuente)
+
+        return dominio_map
+
+    def mostrar_reporte(self, dominio_map):
+        print("📊 Reporte de desfragmentación:\n")
+        for dominio, fuentes in dominio_map.items():
+            print(f"🌐 Dominio: {dominio} ({len(fuentes)} fuentes)")
+            for fuente in fuentes:
+                print(f"   - {fuente}")
+            print()
+
+# Lista simulada de URLs como fuentes de IA
+urls = [
+    "https://es.wikipedia.org/wiki/Colombia",
+    "https://es.wikipedia.org/wiki/Colombia",  # duplicado
+    "https://elpais.com/internacional/",
+    "https://www.bbc.com/mundo",
+    "https://www.bbc.com/mundo",  # duplicado
+    "https://example.com/fuente-inexistente",
+    "https://openai.com/blog/chatgpt",
+    "https://www.un.org/es/",
+]
+
+desfragmentador = DesfragmentadorWeb(urls)
+fuentes_por_dominio = desfragmentador.analizar_fuentes()
+desfragmentador.mostrar_reporte(fuentes_por_dominio)
+🧠 ¿Qué hace este script?
+Limpia duplicados automáticamente.
+
+Verifica si las fuentes están disponibles (200 OK, 404 Not Found, etc.).
+
+Agrupa las fuentes por dominio para análisis más claro.
+
+Te da un reporte limpio que puedes usar como base para filtrar qué páginas incluir en un modelo de IA.
+
+🛠️ Extensiones posibles:
+Verificar si el contenido ha cambiado recientemente (usando ETag o Last-Modified).
+
+Clasificar las fuentes por categoría (educación, noticias, gobierno, etc.).
+
+Conectarlo a una base de datos para guardar historial y control de calidad.
